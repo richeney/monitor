@@ -61,3 +61,17 @@ variable "dns_label" {
   type        = string
   default     = null
 }
+
+//==============================================================
+
+variable "workspace" {
+  description = "Object defining the log analytics workspace."
+
+  type = object({
+    id  = string
+    key = string
+  })
+
+  sensitive = true
+  default   = null
+}

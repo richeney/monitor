@@ -1,3 +1,19 @@
+locals {
+  windows_admin_password = format("%s!", title(random_pet.windows_admin_password.id))
+
+  workspace_settings = {
+    id  = azurerm_log_analytics_workspace.monitor.workspace_id
+    key = azurerm_log_analytics_workspace.monitor.primary_shared_key
+  }
+}
+
+resource "random_pet" "windows_admin_password" {
+  length = 2
+  keepers = {
+    resource_group_id = azurerm_resource_group.vms.id
+  }
+}
+
 resource "azurerm_resource_group" "vms" {
   name     = "nps-vms"
   location = "West Europe"
@@ -32,8 +48,9 @@ module "linux" {
 
   name                 = "nps-linux"
   subnet_id            = azurerm_subnet.vms.id
-  admin_username       = "richeney"
+  admin_username       = "azureadmin"
   admin_ssh_public_key = azurerm_ssh_public_key.richeney.public_key
+  workspace            = local.workspace_settings
 }
 
 module "windows" {
@@ -44,6 +61,6 @@ module "windows" {
 
   name           = "nps-windows"
   subnet_id      = azurerm_subnet.vms.id
-  admin_username = "richeney"
-  admin_password = "Saints76!citadel"
+  admin_username = "azureadmin"
+  admin_password = local.windows_admin_password
 }

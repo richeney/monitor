@@ -76,3 +76,24 @@ resource "azurerm_linux_virtual_machine" "linux" {
     public_key = length(var.admin_ssh_public_key) > 0 ? var.admin_ssh_public_key : file(var.admin_ssh_public_key_file)
   }
 }
+
+resource "azurerm_virtual_machine_extension" "workspace" {
+  for_each             = toset(var.workspace != null ? [var.name] : [])
+  name                 = "${var.name}-workspace"
+  virtual_machine_id   = azurerm_linux_virtual_machine.linux.id
+  publisher            = "Microsoft.EnterpriseCloud.Monitoring"
+  type                 = "OmsAgentForLinux"
+  type_handler_version = "1.13"
+
+  settings = <<SETTINGS
+    {
+        "workspaceId": "${var.workspace.id}"
+    }
+SETTINGS
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+        "workspaceKey": "${var.workspace.key}"
+    }
+PROTECTED_SETTINGS
+}
