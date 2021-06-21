@@ -27,6 +27,8 @@ resource "null_resource" "cowboy_software" {
   }
 }
 
+/*
+
 //##########################################################
 
 resource "azurerm_log_analytics_datasource_windows_event" "application" {
@@ -56,3 +58,5 @@ resource "azurerm_log_analytics_datasource_windows_performance_counter" "cpu" {
   counter_name        = "CPU"
   interval_seconds    = 10
 }
+
+*/

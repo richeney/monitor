@@ -77,13 +77,24 @@ resource "azurerm_linux_virtual_machine" "linux" {
   }
 }
 
-resource "azurerm_virtual_machine_extension" "workspace" {
-  for_each             = toset(var.workspace != null ? [var.name] : [])
-  name                 = "${var.name}-workspace"
-  virtual_machine_id   = azurerm_linux_virtual_machine.linux.id
-  publisher            = "Microsoft.EnterpriseCloud.Monitoring"
-  type                 = "OmsAgentForLinux"
-  type_handler_version = "1.13"
+resource "azurerm_virtual_machine_extension" "ama" {
+  // Confirm with Kusto query: `Heartbeat | summarize by Computer`
+  name                       = "${var.name}-extension-ama"
+  virtual_machine_id         = azurerm_linux_virtual_machine.linux.id
+  publisher                  = "Microsoft.Azure.Monitor"
+  type                       = "AzureMonitorLinuxAgent"
+  type_handler_version       = "1.9"
+  auto_upgrade_minor_version = true
+}
+
+resource "azurerm_virtual_machine_extension" "mma" {
+  for_each                   = toset(var.workspace != null ? [var.name] : [])
+  name                       = "${var.name}-extension-mma"
+  virtual_machine_id         = azurerm_linux_virtual_machine.linux.id
+  publisher                  = "Microsoft.EnterpriseCloud.Monitoring"
+  type                       = "OmsAgentForLinux"
+  type_handler_version       = "1.13"
+  auto_upgrade_minor_version = true
 
   settings = <<SETTINGS
     {

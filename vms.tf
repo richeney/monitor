@@ -50,7 +50,7 @@ module "linux" {
   subnet_id            = azurerm_subnet.vms.id
   admin_username       = "azureadmin"
   admin_ssh_public_key = azurerm_ssh_public_key.richeney.public_key
-  workspace            = local.workspace_settings
+  // workspace            = local.workspace_settings
 }
 
 module "windows" {
